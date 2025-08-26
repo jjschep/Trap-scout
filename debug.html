@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trap Scout — Supabase Debug</title>
+<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;padding:16px}pre{background:#0e1117;color:#e6edf3;padding:12px;border-radius:8px;overflow:auto}.ok{color:#16a34a}.err{color:#ef4444}.muted{color:#6b7280}</style>
+</head><body>
+<h1>Trap Scout — Supabase Debug</h1>
+<p class="muted">Testing <code>select *</code> on <b>traps</b> with your anon key.</p>
+<div id="result" class="muted">Running…</div><pre id="log"></pre>
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const URL='https://rbkaospswxatykrfjyrh.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJia2Fvc3Bzd3hhdHlrcmZqeXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMjgyMjAsImV4cCI6MjA3MTgwNDIyMH0.qLi2bK02fP-JTAey_dLi-lN_j3L7HSFatKp-n2w-I1g';
+const sb = supabase.createClient(URL, KEY);
+const $ = s => document.querySelector(s);
+(async () => {
+  try {
+    const { data, error } = await sb.from('traps').select('*').limit(5);
+    if (error) { $('#result').innerHTML = '<b class="err">ERROR</b>: ' + error.message; $('#log').textContent = JSON.stringify(error, null, 2); }
+    else { $('#result').innerHTML = '<b class="ok">OK</b>: fetched ' + data.length + ' rows.'; $('#log').textContent = JSON.stringify(data, null, 2); }
+  } catch (e) {
+    $('#result').innerHTML = '<b class="err">EXCEPTION</b>: ' + e.message; $('#log').textContent = String(e.stack || e);
+  }
+})();
+</script>
+</body></html>
