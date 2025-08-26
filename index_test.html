@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Trap Scout — Test</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  html,body {height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #333;background:#0b0c0f;color:#e8eaed}
+  #kpi{color:#9aa0a6;font-size:13px}
+  #map{height:calc(100% - 54px);background:#0c0e13}
+  .panel{position:fixed;right:8px;bottom:8px;left:8px;max-width:420px;background:#111827;color:#e5e7eb;border:1px solid #374151;border-radius:10px;padding:10px;display:none}
+  .panel.show{display:block}
+  .log{white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;max-height:200px;overflow:auto;background:#0e1117;color:#e6edf3;padding:8px;border-radius:8px;margin-top:6px}
+  .btn{border:1px solid #374151;background:#1f2937;color:#e5e7eb;padding:6px 10px;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <div>Trap Scout — Test</div>
+  <div id="kpi">loading…</div>
+</header>
+<div id="map"></div>
+
+<div id="panel" class="panel">
+  <div id="title" style="font-weight:600;margin-bottom:6px">Trap</div>
+  <div id="meta"></div>
+  <div class="log" id="log"></div>
+  <div style="margin-top:8px"><button class="btn" id="close">Close</button></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="./config.js?v=now"></script> <!-- force fresh config.js -->
+<script src="./app_test.js?v=now"></script>
+</body>
+</html>
