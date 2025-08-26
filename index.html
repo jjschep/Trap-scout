@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trap Scout</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Trap Scout</h1>
+      <div class="kpis">
+        <span id="kpi-total">Traps: …</span>
+        <span id="kpi-overdue">Overdue: …</span>
+        <span id="kpi-week">Due ≤7d: …</span>
+        <button id="btn-refresh" class="ghost">Refresh</button>
+        <button id="btn-install" class="primary" style="display:none">Install</button>
+      </div>
+    </header>
+
+    <main>
+      <div id="map"></div>
+      <div id="panel">
+        <div id="trap-card" class="card hidden">
+          <h2 id="trap-title">Trap</h2>
+          <div class="meta">
+            <div><strong>Type:</strong> <span id="trap-type"></span></div>
+            <div><strong>Target:</strong> <span id="trap-target"></span></div>
+            <div><strong>Lure:</strong> <span id="trap-lure"></span></div>
+            <div><strong>Block:</strong> <span id="trap-block"></span></div>
+            <div><strong>Next due:</strong> <span id="trap-due"></span></div>
+            <div class="links">
+              <a id="gmaps" target="_blank">Google Maps</a>
+              <a id="amaps">Apple Maps</a>
+            </div>
+          </div>
+          <hr/>
+          <form id="visit-form">
+            <div class="row">
+              <label>Count (♂)</label>
+              <input type="number" id="v-count" min="0" inputmode="numeric" />
+            </div>
+            <div class="row">
+              <label>Condition</label>
+              <select id="v-cond">
+                <option value="">(select)</option>
+                <option>OK</option>
+                <option>Missing</option>
+                <option>Damaged</option>
+                <option>Dry lure</option>
+                <option>Spilled</option>
+                <option>Moved</option>
+                <option>Replaced</option>
+                <option>Cleaned</option>
+              </select>
+            </div>
+            <div class="row">
+              <label>Action</label>
+              <select id="v-act">
+                <option value="">(select)</option>
+                <option>Logged only</option>
+                <option>Cleaned</option>
+                <option>Re-baited</option>
+                <option>Replaced trap</option>
+                <option>Replaced lure</option>
+                <option>Relocated</option>
+                <option>Escalated</option>
+              </select>
+            </div>
+            <div class="row">
+              <label>Operator</label>
+              <input id="v-operator" placeholder="Your name" />
+            </div>
+            <div class="row">
+              <label>Notes</label>
+              <textarea id="v-notes" rows="2" placeholder="Optional"></textarea>
+            </div>
+            <button type="submit" class="primary">Save visit</button>
+            <div id="visit-status" class="status"></div>
+          </form>
+        </div>
+
+        <div id="queue" class="card hidden">
+          <h3>Offline queue</h3>
+          <div id="queue-list"></div>
+          <button id="btn-sync" class="ghost">Sync now</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script defer src="config.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
