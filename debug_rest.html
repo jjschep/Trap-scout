@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Trap Scout — REST Debug</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; padding: 16px; }
+    pre { background: #0e1117; color: #e6edf3; padding: 12px; border-radius: 8px; overflow: auto; }
+    .ok { color: #16a34a; }
+    .err { color: #ef4444; }
+    .muted { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>Trap Scout — REST Debug</h1>
+  <p class="muted">Calling Supabase REST directly: <code>GET /rest/v1/traps?select=*&limit=5</code></p>
+  <div id="status" class="muted">Running…</div>
+  <h3>Response headers</h3>
+  <pre id="headers"></pre>
+  <h3>Body</h3>
+  <pre id="body"></pre>
+  <script>
+    const URL = 'https://rbkaospswxatykrfjyrh.supabase.co/rest/v1/traps?select=*&limit=5';
+    const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJia2Fvc3Bzd3hhdHlrcmZqeXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMjgyMjAsImV4cCI6MjA3MTgwNDIyMH0.qLi2bK02fP-JTAey_dLi-lN_j3L7HSFatKp-n2w-I1g';
+    (async () => {
+      try {
+        const res = await fetch(URL, {
+          method: 'GET',
+          headers: {
+            'apikey': KEY,
+            'Authorization': 'Bearer ' + KEY
+          }
+        });
+        document.getElementById('headers').textContent =
+          Array.from(res.headers.entries()).map(([k,v]) => k+': '+v).join('\\n');
+        const text = await res.text();
+        document.getElementById('body').textContent = text;
+        document.getElementById('status').innerHTML =
+          res.ok ? '<b class="ok">OK</b> HTTP ' + res.status :
+                   '<b class="err">ERROR</b> HTTP ' + res.status;
+      } catch (e) {
+        document.getElementById('status').innerHTML =
+          '<b class="err">EXCEPTION</b> ' + e.message;
+        document.getElementById('body').textContent = String(e.stack || e);
+      }
+    })();
+  </script>
+</body>
+</html>
