@@ -207,28 +207,39 @@ function showTrap(t){
   document.getElementById('trap-card').classList.remove('hidden');
 }
 
+// Replace old submit handler with this one
 document.addEventListener('submit', async (e) => {
-  if(e.target.id !== 'visit-form') return;
+  if (e.target.id !== 'visit-form') return;
   e.preventDefault();
-  if(!selectedTrap){ return; }
+  if (!selectedTrap) return;
+
   const statusEl = document.getElementById('visit-status');
+
   const payload = {
     trap_id: selectedTrap.id,
     visited_at: new Date().toISOString(),
-    count_males: parseInt(document.getElementById('v-count').value||'') || null,
-    condition: document.getElementById('v-cond').value || null,
-    action: document.getElementById('v-act').value || null,
-    operator: document.getElementById('v-operator').value || null,
-    notes: document.getElementById('v-notes').value || null
+    count_males: parseInt(document.getElementById('v-count')?.value || '') || null,
+    condition: document.getElementById('v-cond')?.value || null,
+    action: document.getElementById('v-act')?.value || null,
+    operator: document.getElementById('v-operator')?.value || null,
+    notes: document.getElementById('v-notes')?.value || null
   };
-  try{
+
+  try {
     const { error } = await sb.from('visits').insert(payload);
-    if(error) throw error;
+    if (error) {
+      // Show the DB error (so we know why it failed)
+      alert('Insert failed: ' + error.message);
+      setSyncStatus(false);
+      statusEl.textContent = 'Error: ' + error.message;
+      return;
+    }
     statusEl.textContent = 'Saved ✔';
-    updateKPIs();
     setSyncStatus(true);
-  }catch(err){
-    const q = JSON.parse(localStorage.getItem('visitQueue')||'[]');
+    updateKPIs();
+  } catch (err) {
+    // Only here for network/offline exceptions
+    const q = JSON.parse(localStorage.getItem('visitQueue') || '[]');
     q.push(payload);
     localStorage.setItem('visitQueue', JSON.stringify(q));
     statusEl.textContent = 'Saved offline (will sync)';
