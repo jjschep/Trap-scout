@@ -76,6 +76,7 @@ async function init(){
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       btn.style.display = 'none';
+      setSyncStatus(null); // start neutral
     };
   });
 
@@ -113,6 +114,8 @@ async function loadTraps(){
     localStorage.setItem('trapsCache', JSON.stringify(trapsCache));
     renderMarkers(trapsCache);
     await updateKPIs();
+    setSyncStatus(true);
+    
   }catch(err){
     console.warn('Online fetch failed, using cache', err);
     const cached = localStorage.getItem('trapsCache');
@@ -120,6 +123,7 @@ async function loadTraps(){
       trapsCache = JSON.parse(cached);
       renderMarkers(trapsCache);
       updateKPIs();
+      setSyncStatus(false);
     }
   }
 }
@@ -202,6 +206,7 @@ document.addEventListener('submit', async (e) => {
     if(error) throw error;
     statusEl.textContent = 'Saved ✔';
     updateKPIs();
+    setSyncStatus(true);
   }catch(err){
     const q = JSON.parse(localStorage.getItem('visitQueue')||'[]');
     q.push(payload);
@@ -209,6 +214,7 @@ document.addEventListener('submit', async (e) => {
     statusEl.textContent = 'Saved offline (will sync)';
     document.getElementById('queue').classList.remove('hidden');
     renderQueue();
+    setSyncStatus(false);
   }
 });
 
@@ -228,6 +234,7 @@ async function syncQueue(){
   const q = JSON.parse(localStorage.getItem('visitQueue')||'[]');
   if(!q.length) return;
   const { error } = await sb.from('visits').insert(q);
+  setSyncStatus(true);
   if(!error){
     localStorage.removeItem('visitQueue');
     document.getElementById('queue-list').innerHTML = '';
@@ -236,6 +243,7 @@ async function syncQueue(){
     alert('Synced offline visits ✔');
   }else{
     alert('Still offline or error syncing.');
+    setSyncStatus(false);
   }
 }
 function openTrapList(list){
