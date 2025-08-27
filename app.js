@@ -345,4 +345,96 @@ trapSearchEl.addEventListener('input', () => {
   });
   renderTrapList(filtered);
 });
+// ===== FOLLOW ME FEATURE (drop-in) =====
+let youMarker = null;
+let youCircle = null;
+let followWatchId = null;
+let followCenter = true;
+
+function updateYou(lat, lon, acc) {
+  const ll = L.latLng(lat, lon);
+  if (!youMarker) {
+    youMarker = L.marker(ll, { title: 'You are here' }).addTo(map);
+  } else {
+    youMarker.setLatLng(ll);
+  }
+  if (!youCircle) {
+    youCircle = L.circle(ll, {
+      radius: acc || 10,
+      color: '#3b82f6',
+      fillColor: '#3b82f6',
+      fillOpacity: 0.15,
+      weight: 1
+    }).addTo(map);
+  } else {
+    youCircle.setLatLng(ll);
+    if (acc) youCircle.setRadius(acc);
+  }
+  if (followCenter) map.setView(ll, Math.max(map.getZoom(), 18), { animate: true });
+}
+
+function startFollowing() {
+  if (!('geolocation' in navigator)) {
+    alert('Geolocation not supported.');
+    return;
+  }
+  // One-shot fix first (helps iOS)
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude, accuracy } = pos.coords || {};
+      updateYou(latitude, longitude, accuracy);
+      beginWatch();
+    },
+    (err) => {
+      alert('Location error: ' + err.message + '\nCheck browser permissions + Precise Location.');
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+  );
+}
+
+function beginWatch() {
+  if (followWatchId != null) return;
+  followWatchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const { latitude, longitude, accuracy } = pos.coords || {};
+      updateYou(latitude, longitude, accuracy);
+    },
+    (err) => {
+      console.warn('watchPosition error', err);
+      setSyncStatus(false);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+  );
+  const btn = document.getElementById('btn-locate');
+  if (btn) btn.textContent = 'Stop';
+  followCenter = true;
+}
+
+function stopFollowing() {
+  if (followWatchId != null) {
+    navigator.geolocation.clearWatch(followWatchId);
+    followWatchId = null;
+  }
+  const btn = document.getElementById('btn-locate');
+  if (btn) btn.textContent = 'Follow me';
+}
+
+// Hook up button and map after everything is ready
+window.addEventListener('load', () => {
+  const btnLocate = document.getElementById('btn-locate');
+  if (btnLocate) {
+    btnLocate.addEventListener('click', () => {
+      if (followWatchId == null) startFollowing();
+      else stopFollowing();
+    });
+  }
+  // Pause auto-centering if user drags map
+  map.on('movestart', () => { followCenter = false; });
+});
+
+// Stop tracking when app is backgrounded
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopFollowing();
+});
+// ===== END FOLLOW ME FEATURE =====
 window.addEventListener('load', init);
