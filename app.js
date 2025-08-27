@@ -5,6 +5,8 @@ let map, markersLayer;
 let trapsCache = [];
 let selectedTrap = null;
 let deferredPrompt = null;
+let sheetTraps, sheetLogs, trapListEl, logListEl, trapSearchEl;
+
 
 const condOpts = ['OK','Missing','Damaged','Dry lure','Spilled','Moved','Replaced','Cleaned'];
 const actOpts  = ['Logged only','Cleaned','Re-baited','Replaced trap','Replaced lure','Relocated','Escalated'];
