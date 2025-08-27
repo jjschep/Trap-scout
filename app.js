@@ -104,6 +104,26 @@ async function init(){
   document.getElementById('btn-sync').addEventListener('click', syncQueue);
 
   await loadTraps();
+
+  // Deep-link: open a trap by ?trap=CODE or ?trap_id=UUID
+  const params = new URLSearchParams(location.search);
+  const qId = params.get('trap_id');
+  const qCode = params.get('trap');
+
+  let target = null;
+  if (qId) {
+    target = trapsCache.find(t => String(t.id) === qId);
+  }
+  if (!target && qCode) {
+    const q = qCode.toLowerCase();
+    target = trapsCache.find(t => (t.code || '').toLowerCase() === q);
+  }
+  if (target) {
+    showTrap(target);
+    if (target.lat != null && target.lon != null) {
+      map.setView([target.lat, target.lon], Math.max(map.getZoom(), 18), { animate: true });
+    }
+  }
 }
 
 async function loadTraps(){
