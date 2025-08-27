@@ -33,34 +33,88 @@
       <!-- THIS must exist and have height via CSS -->
       <div id="map"></div>
 
-      <!-- existing right panel with trap card + queue (keep yours here) -->
-      <div id="panel">
-        <div id="trap-card" class="card hidden">
-          <h2 id="trap-title">Trap</h2>
-          <div class="meta">
-            <div><strong>Type:</strong> <span id="trap-type"></span></div>
-            <div><strong>Target:</strong> <span id="trap-target"></span></div>
-            <div><strong>Lure:</strong> <span id="trap-lure"></span></div>
-            <div><strong>Block:</strong> <span id="trap-block"></span></div>
-            <div><strong>Next due:</strong> <span id="trap-due"></span></div>
-            <div class="links">
-              <a id="gmaps" target="_blank">Google Maps</a>
-              <a id="amaps">Apple Maps</a>
-            </div>
-          </div>
-          <hr/>
-          <!-- your visit form here -->
-          <form id="visit-form"> … </form>
-        </div>
+        <!-- Right-side panel -->
+<div id="panel">
+  <!-- Trap card with visit form -->
+  <div id="trap-card" class="card hidden">
+    <h2 id="trap-title">Trap</h2>
 
-        <div id="queue" class="card hidden">
-          <h3>Offline queue</h3>
-          <div id="queue-list"></div>
-          <button id="btn-sync" class="ghost">Sync now</button>
-        </div>
+    <div class="meta">
+      <div><strong>Type:</strong> <span id="trap-type"></span></div>
+      <div><strong>Target:</strong> <span id="trap-target"></span></div>
+      <div><strong>Lure:</strong> <span id="trap-lure"></span></div>
+      <div><strong>Block:</strong> <span id="trap-block"></span></div>
+      <div><strong>Next due:</strong> <span id="trap-due"></span></div>
+      <div class="links">
+        <a id="gmaps" target="_blank" rel="noopener">Google Maps</a>
+        <a id="amaps">Apple Maps</a>
       </div>
-    </main>
+    </div>
+
+    <hr />
+
+    <!-- ✅ Visit form (IDs match app.js) -->
+    <form id="visit-form" autocomplete="off">
+      <div class="row">
+        <label for="v-count">♂ Count</label>
+        <input id="v-count" type="number" inputmode="numeric" placeholder="e.g. 0" />
+      </div>
+
+      <div class="row">
+        <label for="v-cond">Condition</label>
+        <select id="v-cond">
+          <option value="">—</option>
+          <option>OK</option>
+          <option>Missing</option>
+          <option>Damaged</option>
+          <option>Dry lure</option>
+          <option>Spilled</option>
+          <option>Moved</option>
+          <option>Replaced</option>
+          <option>Cleaned</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="v-act">Action</label>
+        <select id="v-act">
+          <option value="">—</option>
+          <option>Logged only</option>
+          <option>Cleaned</option>
+          <option>Re-baited</option>
+          <option>Replaced trap</option>
+          <option>Replaced lure</option>
+          <option>Relocated</option>
+          <option>Escalated</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="v-operator">Operator</label>
+        <input id="v-operator" type="text" placeholder="Your name/initials" />
+      </div>
+
+      <div class="row">
+        <label for="v-notes">Notes</label>
+        <textarea id="v-notes" rows="3" placeholder="Optional notes"></textarea>
+      </div>
+
+      <div class="row">
+        <button type="submit" class="primary">Save visit</button>
+        <span id="visit-status" style="margin-left:8px;"></span>
+      </div>
+    </form>
   </div>
+
+  <!-- Offline queue panel (used by your JS) -->
+  <div id="queue" class="card hidden">
+    <h3>Offline queue</h3>
+    <div id="queue-list"></div>
+    <button id="btn-sync" class="ghost">Sync now</button>
+  </div>
+</div>
+
+      
 
   <!-- Slide-in sheet: Trap list -->
   <div id="sheet-traps" class="sheet">
