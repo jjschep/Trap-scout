@@ -7,68 +7,7 @@ let selectedTrap = null;
 let deferredPrompt = null;
 let sheetTraps, sheetLogs, trapListEl, logListEl, trapSearchEl;
 let syncResetTimer = null;
-let youMarker = null;
-let youCircle = null;
-let followWatchId = null;
-let followCenter = true; // auto-center while following
 
-function updateYouPosition(lat, lon, accuracyMeters) {
-  const latlng = L.latLng(lat, lon);
-  if (!youMarker) {
-    youMarker = L.marker(latlng, { title: "You are here" }).addTo(map);
-  } else {
-    youMarker.setLatLng(latlng);
-  }
-  if (!youCircle) {
-    youCircle = L.circle(latlng, { radius: accuracyMeters || 10, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.15, weight: 1 }).addTo(map);
-  } else {
-    youCircle.setLatLng(latlng);
-    if (accuracyMeters) youCircle.setRadius(accuracyMeters);
-  }
-  if (followCenter) map.setView(latlng, Math.max(map.getZoom(), 18));
-}
-
-function startFollowing() {
-  if (!('geolocation' in navigator)) {
-    alert('Geolocation not supported on this device/browser.');
-    return;
-  }
-  // If already watching, do nothing
-  if (followWatchId != null) return;
-
-  // High accuracy GPS; keep power in mind
-  followWatchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      const { latitude, longitude, accuracy } = pos.coords || {};
-      updateYouPosition(latitude, longitude, accuracy);
-    },
-    (err) => {
-      console.warn('Geo error', err);
-      alert('Unable to get location: ' + err.message);
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,   // accept a reading up to 5s old
-      timeout: 15000      // give up a slow fix after 15s
-    }
-  );
-
-  const btn = document.getElementById('btn-locate');
-  if (btn) btn.textContent = 'Stop';
-  followCenter = true;
-}
-
-function stopFollowing() {
-  if (followWatchId != null) {
-    navigator.geolocation.clearWatch(followWatchId);
-    followWatchId = null;
-  }
-  const btn = document.getElementById('btn-locate');
-  if (btn) btn.textContent = 'Follow me';
-  // Keep marker on map, or remove if you prefer:
-  // if (youMarker) { map.removeLayer(youMarker); youMarker = null; }
-  // if (youCircle) { map.removeLayer(youCircle); youCircle = null; }
-}
 /**
  * Update the Sync banner and auto-reset to neutral after `ms` (default 2 minutes).
  * setSyncStatus(true)  -> "Sync: OK"    (green)
@@ -138,12 +77,6 @@ async function init(){
       await deferredPrompt.userChoice;
       btn.style.display = 'none';
       setSyncStatus(null); // start neutral
-      document.getElementById('btn-locate').addEventListener('click', () => {
-  if (followWatchId == null) startFollowing();
-  else stopFollowing();
-        map.on('movestart', () => { followCenter = false; });
-map.on('moveend',   () => { /* keep followCenter=false until next toggle or you can set a timer */ });
-});
     };
   });
 
