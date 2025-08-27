@@ -6,7 +6,43 @@ let trapsCache = [];
 let selectedTrap = null;
 let deferredPrompt = null;
 let sheetTraps, sheetLogs, trapListEl, logListEl, trapSearchEl;
+let syncResetTimer = null;
 
+/**
+ * Update the Sync banner and auto-reset to neutral after `ms` (default 2 minutes).
+ * setSyncStatus(true)  -> "Sync: OK"    (green)
+ * setSyncStatus(false) -> "Sync: Error" (red)
+ * setSyncStatus(null)  -> "Sync: —"     (neutral)
+ */
+function setSyncStatus(ok, ms = 120000) {
+  const el = document.getElementById('kpi-sync');
+  if (!el) return;
+
+  el.classList.remove('ok','err','neutral');
+  if (ok === true) {
+    el.textContent = 'Sync: OK';
+    el.classList.add('ok');
+  } else if (ok === false) {
+    el.textContent = 'Sync: Error';
+    el.classList.add('err');
+  } else {
+    el.textContent = 'Sync: —';
+    el.classList.add('neutral');
+  }
+
+  // auto-reset
+  if (syncResetTimer) clearTimeout(syncResetTimer);
+  if (ok === true || ok === false) {
+    syncResetTimer = setTimeout(() => {
+      const el2 = document.getElementById('kpi-sync');
+      if (!el2) return;
+      el2.classList.remove('ok','err');
+      el2.classList.add('neutral');
+      el2.textContent = 'Sync: —';
+      syncResetTimer = null;
+    }, ms);
+  }
+}
 
 const condOpts = ['OK','Missing','Damaged','Dry lure','Spilled','Moved','Replaced','Cleaned'];
 const actOpts  = ['Logged only','Cleaned','Re-baited','Replaced trap','Replaced lure','Relocated','Escalated'];
