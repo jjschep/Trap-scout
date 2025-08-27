@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Trap QR Codes</title>
+<style>
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; text-align: center; }
+  .code { font-weight: 700; margin-top: 8px; }
+  .meta { color:#666; font-size: 12px; margin-top: 4px; }
+  .controls { margin-bottom: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  input[type="text"]{ border:1px solid #ccc; border-radius:8px; padding:6px 8px; flex:1; min-width:200px; }
+  button { border:1px solid #ccc; background:#f8f8f8; padding:6px 10px; border-radius:8px; }
+  @media print {
+    .controls { display: none; }
+    .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<h1>Trap QR Codes</h1>
+<div class="controls">
+  <input id="filter" type="text" placeholder="Filter by code / type / target / lure…" />
+  <button onclick="window.print()">Print</button>
+</div>
+<div id="grid" class="grid"></div>
+
+<!-- QR lib -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
+<!-- Supabase -->
+<script src="./libs/supabase.min.js"></script>
+<script src="./config.js"></script>
+<script>
+const sb = supabase.createClient(TRAP_SCOUT_CONFIG.SUPABASE_URL, TRAP_SCOUT_CONFIG.SUPABASE_ANON_KEY);
+const grid = document.getElementById('grid');
+const filterEl = document.getElementById('filter');
+
+function deepLinkFor(t) {
+  const url = new URL(location.origin + '/');
+  url.searchParams.set('trap', t.code); // change to 'trap_id' if you prefer UUIDs
+  return url.toString();
+}
+
+function render(list) {
+  grid.innerHTML = '';
+  (list||[]).forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const qrDiv = document.createElement('div');
+    qrDiv.style.width = '160px';
+    qrDiv.style.height = '160px';
+    qrDiv.style.margin = '0 auto';
+
+    const codeEl = document.createElement('div');
+    codeEl.className = 'code';
+    codeEl.textContent = t.code;
+
+    const metaEl = document.createElement('div');
+    metaEl.className = 'meta';
+    metaEl.textContent = [t.trap_type, t.target, t.lure].filter(Boolean).join(' • ');
+
+    card.appendChild(qrDiv);
+    card.appendChild(codeEl);
+    card.appendChild(metaEl);
+    grid.appendChild(card);
+
+    new QRCode(qrDiv, {
+      text: deepLinkFor(t),
+      width: 160, height: 160, correctLevel: QRCode.CorrectLevel.M
+    });
+  });
+}
+
+(async () => {
+  const { data, error } = await sb.from('traps').select('id, code, trap_type, target, lure').order('code');
+  if (error) { grid.textContent = 'Error loading traps: ' + error.message; return; }
+  window.__TRAPS = data || [];
+  render(window.__TRAPS);
+
+  filterEl.addEventListener('input', () => {
+    const q = filterEl.value.toLowerCase().trim();
+    if (!q) return render(window.__TRAPS);
+    const filtered = window.__TRAPS.filter(t => {
+      const s = `${t.code||''} ${t.trap_type||''} ${t.target||''} ${t.lure||''}`.toLowerCase();
+      return s.includes(q);
+    });
+    render(filtered);
+  });
+})();
+</script>
+</body>
+</html>
