@@ -52,10 +52,13 @@ async function init(){
 
   // Map
   map = L.map('map', { zoomControl: true }).setView(cfg.DEFAULT_CENTER, cfg.DEFAULT_ZOOM);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Earthstar Geographics, Maxar'
+  }
+).addTo(map);
   markersLayer = L.layerGroup().addTo(map);
 
   document.getElementById('btn-refresh').addEventListener('click', loadTraps);
