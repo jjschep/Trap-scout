@@ -20,16 +20,17 @@
         <span id="kpi-overdue">Overdue: …</span>
         <span id="kpi-week">Due ≤7d: …</span>
 
-        <!-- new button -->
         <button id="btn-traplist" class="ghost">Traps</button>
-        
         <button id="btn-refresh" class="ghost">Refresh</button>
         <button id="btn-install" class="primary" style="display:none">Install</button>
       </div>
     </header>
 
     <main>
+      <!-- THIS must exist and have height via CSS -->
       <div id="map"></div>
+
+      <!-- existing right panel with trap card + queue (keep yours here) -->
       <div id="panel">
         <div id="trap-card" class="card hidden">
           <h2 id="trap-title">Trap</h2>
@@ -45,49 +46,8 @@
             </div>
           </div>
           <hr/>
-          <form id="visit-form">
-            <div class="row">
-              <label>Count (♂)</label>
-              <input type="number" id="v-count" min="0" inputmode="numeric" />
-            </div>
-            <div class="row">
-              <label>Condition</label>
-              <select id="v-cond">
-                <option value="">(select)</option>
-                <option>OK</option>
-                <option>Missing</option>
-                <option>Damaged</option>
-                <option>Dry lure</option>
-                <option>Spilled</option>
-                <option>Moved</option>
-                <option>Replaced</option>
-                <option>Cleaned</option>
-              </select>
-            </div>
-            <div class="row">
-              <label>Action</label>
-              <select id="v-act">
-                <option value="">(select)</option>
-                <option>Logged only</option>
-                <option>Cleaned</option>
-                <option>Re-baited</option>
-                <option>Replaced trap</option>
-                <option>Replaced lure</option>
-                <option>Relocated</option>
-                <option>Escalated</option>
-              </select>
-            </div>
-            <div class="row">
-              <label>Operator</label>
-              <input id="v-operator" placeholder="Your name" />
-            </div>
-            <div class="row">
-              <label>Notes</label>
-              <textarea id="v-notes" rows="2" placeholder="Optional"></textarea>
-            </div>
-            <button type="submit" class="primary">Save visit</button>
-            <div id="visit-status" class="status"></div>
-          </form>
+          <!-- your visit form here -->
+          <form id="visit-form"> … </form>
         </div>
 
         <div id="queue" class="card hidden">
@@ -98,34 +58,30 @@
       </div>
     </main>
   </div>
-  <!-- Load libraries FIRST -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./libs/supabase.min.js"></script>
-
-<!-- Then your config (must have quoted values) -->
-<script src="./config.js?v=now"></script>
-
-<!-- Finally your app code -->
-<script src="./app.js?v=now"></script>
 
   <!-- Slide-in sheet: Trap list -->
-<div id="sheet-traps" class="sheet">
-  <div class="sheet-head">
-    <div class="title">All traps</div>
-    <input id="trap-search" placeholder="Search code / type / lure…" />
-    <button id="sheet-close" class="ghost">Close</button>
+  <div id="sheet-traps" class="sheet">
+    <div class="sheet-head">
+      <div class="title">All traps</div>
+      <input id="trap-search" placeholder="Search code / type / lure…"/>
+      <button id="sheet-close" class="ghost">Close</button>
+    </div>
+    <div id="trap-list" class="list"></div>
   </div>
-  <div id="trap-list" class="list"></div>
-</div>
 
-<!-- Slide-in sheet: Visit log for selected trap -->
-<div id="sheet-logs" class="sheet">
-  <div class="sheet-head">
-    <div class="title" id="logs-title">Trap visits</div>
-    <button id="logs-close" class="ghost">Close</button>
+  <!-- Slide-in sheet: Visit log -->
+  <div id="sheet-logs" class="sheet">
+    <div class="sheet-head">
+      <div class="title" id="logs-title">Trap visits</div>
+      <button id="logs-close" class="ghost">Close</button>
+    </div>
+    <div id="log-list" class="list"></div>
   </div>
-  <div id="log-list" class="list"></div>
-</div>
 
+  <!-- Scripts: ORDER MATTERS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./libs/supabase.min.js"></script>
+  <script src="./config.js?v=now"></script>
+  <script src="./app.js?v=now"></script>
 </body>
 </html>
