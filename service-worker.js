@@ -1,5 +1,5 @@
 
-const CACHE = 'trap-scout-v14';
+const CACHE = 'trap-scout-v15';
 const ASSETS = [
   './',
   './index.html',
