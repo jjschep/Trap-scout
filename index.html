@@ -95,9 +95,14 @@
     </main>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script defer src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script defer src="config.js"></script>
-  <script defer src="app.js"></script>
+  <!-- Load libraries FIRST -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+<!-- Then your config (must contain quoted values) -->
+<script src="./config.js?v=now"></script>
+
+<!-- Finally your main app code -->
+<script src="./app.js?v=now"></script>
 </body>
 </html>
