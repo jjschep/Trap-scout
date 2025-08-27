@@ -108,5 +108,24 @@
 <!-- Finally your app code -->
 <script src="./app.js?v=now"></script>
 
+  <!-- Slide-in sheet: Trap list -->
+<div id="sheet-traps" class="sheet">
+  <div class="sheet-head">
+    <div class="title">All traps</div>
+    <input id="trap-search" placeholder="Search code / type / lure…" />
+    <button id="sheet-close" class="ghost">Close</button>
+  </div>
+  <div id="trap-list" class="list"></div>
+</div>
+
+<!-- Slide-in sheet: Visit log for selected trap -->
+<div id="sheet-logs" class="sheet">
+  <div class="sheet-head">
+    <div class="title" id="logs-title">Trap visits</div>
+    <button id="logs-close" class="ghost">Close</button>
+  </div>
+  <div id="log-list" class="list"></div>
+</div>
+
 </body>
 </html>
