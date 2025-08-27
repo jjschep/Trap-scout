@@ -202,5 +202,103 @@ async function syncQueue(){
     alert('Still offline or error syncing.');
   }
 }
+function openTrapList(list){
+  renderTrapList(list || trapsCache);
+  sheetTraps.classList.add('show');
+  trapSearchEl.value = '';
+}
 
+function renderTrapList(list){
+  trapListEl.innerHTML = '';
+  (list||[]).forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div><b>${t.code}</b></div>
+      <div class="meta-row">
+        <span>${t.trap_type||''}</span>
+        <span>${t.target||''}</span>
+        <span>${t.lure||''}</span>
+        <span>${(t.lat!=null && t.lon!=null) ? `${Number(t.lat).toFixed(5)}, ${Number(t.lon).toFixed(5)}` : ''}</span>
+      </div>
+      <div class="meta-row">
+        <span class="badge small">${t.service_interval_days || (isBucket(t.trap_type)?28:21)} d</span>
+      </div>
+    `;
+    el.onclick = async () => {
+      sheetTraps.classList.remove('show');
+      await openLogsForTrap(t);
+    };
+    trapListEl.appendChild(el);
+  });
+}
+
+async function openLogsForTrap(t){
+  document.getElementById('logs-title').textContent = `${t.code} — logs`;
+  logListEl.innerHTML = '<div class="item">Loading…</div>';
+
+  const { data, error } = await sb
+    .from('visits')
+    .select('visited_at, count_males, condition, action, operator, notes')
+    .eq('trap_id', t.id)
+    .order('visited_at', { ascending: false })
+    .limit(500);
+
+  if(error){
+    logListEl.innerHTML = `<div class="item">Error loading logs: ${error.message}</div>`;
+    sheetLogs.classList.add('show');
+    return;
+  }
+  if(!data || data.length === 0){
+    logListEl.innerHTML = `<div class="item">No visits yet for ${t.code}.</div>`;
+    sheetLogs.classList.add('show');
+    return;
+  }
+
+  logListEl.innerHTML = '';
+  data.forEach(v => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    const date = new Date(v.visited_at).toLocaleString();
+    el.innerHTML = `
+      <div><b>${date}</b></div>
+      <div class="meta-row">
+        <span>♂ ${v.count_males ?? 0}</span>
+        ${v.condition ? `<span>${v.condition}</span>` : ''}
+        ${v.action ? `<span>${v.action}</span>` : ''}
+        ${v.operator ? `<span>by ${v.operator}</span>` : ''}
+      </div>
+      ${v.notes ? `<div class="meta-row">${v.notes}</div>` : ''}
+    `;
+    logListEl.appendChild(el);
+  });
+
+  sheetLogs.classList.add('show');
+}
+
+// Grab elements
+sheetTraps   = document.getElementById('sheet-traps');
+sheetLogs    = document.getElementById('sheet-logs');
+trapListEl   = document.getElementById('trap-list');
+logListEl    = document.getElementById('log-list');
+trapSearchEl = document.getElementById('trap-search');
+
+// Button: open trap list
+document.getElementById('btn-traplist').addEventListener('click', () => {
+  openTrapList(trapsCache);
+});
+
+// Close buttons
+document.getElementById('sheet-close').addEventListener('click', () => sheetTraps.classList.remove('show'));
+document.getElementById('logs-close').addEventListener('click', () => sheetLogs.classList.remove('show'));
+
+// Live filter
+trapSearchEl.addEventListener('input', () => {
+  const q = trapSearchEl.value.toLowerCase().trim();
+  const filtered = trapsCache.filter(t => {
+    const s = `${t.code||''} ${t.trap_type||''} ${t.target||''} ${t.lure||''}`.toLowerCase();
+    return s.includes(q);
+  });
+  renderTrapList(filtered);
+});
 window.addEventListener('load', init);
